@@ -15,7 +15,6 @@ const App = () => {
 
   const startGame = () => {
     setStart(true);
-    console.log(squareColors);
     setSquare(createMap(columns, lines, squareColors.map(i => i.id)));
   };
 
