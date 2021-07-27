@@ -1,0 +1,1 @@
+export const YOU_SUBMITTED_SUCCESSFULLY = 'You submitted successfully!';

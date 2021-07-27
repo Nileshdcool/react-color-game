@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { createMap, setOrigin } from "./components/game/tiles";
 import { initialSelection, SelectColors } from "./components/colors";
 import { Badge, Alert, Button, Col, Container, Row, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from "reactstrap";
+import ColorService from "./services/color.service";
 
 const App = () => {
   const [columns, setColumns] = useState<string | number>(6);
@@ -13,9 +13,17 @@ const App = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen(prevState => !prevState);
 
+
   const startGame = () => {
-    setStart(true);
-    setSquare(createMap(columns, lines, squareColors.map(i => i.id)));
+    const data = {
+      columns,
+      lines,
+      colors: squareColors.map(i => i.id)
+    }
+    ColorService.createMap(data).then((c) => {
+      setStart(true);
+      setSquare(c.data);
+    });
   };
 
   return (
@@ -79,8 +87,12 @@ const App = () => {
                       </Dropdown>
                     </Col>
                     <Col> <Button onClick={() => {
-                      var x = setOrigin(square, color);
-                      setSquare(x);
+                      const data = {
+                        square, color
+                      }
+                      ColorService.setOrigin(data).then((c) => {
+                        setSquare(c.data);
+                      })
                     }} style={{ width: '50%' }} color="primary">Apply</Button>{' '}</Col>
                   </Row>
                   <Row>
@@ -90,7 +102,6 @@ const App = () => {
               </div>}
             </>
           </Col>
-
         </Row>
       </Container>
     </>
