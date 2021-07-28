@@ -1,7 +1,7 @@
 import Multiselect from 'multiselect-react-dropdown';
 import React from 'react';
 
-const colorOptions = [
+let colorOptions = [
     { id: "red", name: "Red" },
     { id: "blue", name: "Blue" },
     { id: "yellow", name: "Yellow" },

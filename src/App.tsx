@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
-import { initialSelection, SelectColors } from "./components/colors";
-import { Badge, Alert, Button, Col, Container, Row, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from "reactstrap";
+import { initialSelection } from "./components/colors";
+import { Col, Container, Row } from "reactstrap";
 import ColorService from "./services/color.service";
+import { GameInfo } from "./components/game/gameInfo";
+import { GameDashboard } from "./components/game/gameDashboard";
+import { CubeBlock } from "./components/game/cubeBlock";
+import { GameConsole } from "./components/game/gameConsole";
+
 
 const App = () => {
   const [columns, setColumns] = useState<string | number>(6);
@@ -15,7 +20,7 @@ const App = () => {
   const [isBot, setIsBot] = useState(false);
   const [userRemainingClicks, setUserRemainingClicks] = useState(5);
   const [computerRemainingClicks, setComputerRemainingClicks] = useState(5);
-
+  const [colorOptions, setColorOptions] = useState([]);
 
   const startGame = () => {
     const data = {
@@ -28,6 +33,12 @@ const App = () => {
       setSquare(c.data);
     });
   };
+
+  useEffect(() => {
+    ColorService.getAllColors().then(c => {
+      setColorOptions(c);
+    })
+  }, []);
 
   useEffect(() => {
     if (isBot) {
@@ -56,6 +67,52 @@ const App = () => {
     })
   }
 
+  const renderGameInfo = () => {
+    return (
+      <>
+        {<GameInfo colorOptions={colorOptions} setSquareColos={setSquareColos}></GameInfo>}
+      </>
+    )
+  }
+
+  const renderGameDashboard = () => {
+    const data = {
+      columns,
+      setColumns,
+      lines,
+      setLines,
+      startGame,
+      start
+    }
+    return (
+      <>
+        <GameDashboard data={data}></GameDashboard>
+      </>
+    )
+  }
+
+  const renderCubeBlock = () => {
+    const data = {
+      square, isBot, computerRemainingClicks, userRemainingClicks
+    }
+    return (
+      <CubeBlock data={data}></CubeBlock>
+    )
+  }
+
+  const renderGameConsole = () => {
+    const data = {
+      dropdownOpen,
+      toggle,
+      color,
+      squareColors,
+      setColor,
+      apply
+    }
+    return (
+      <GameConsole data={data}></GameConsole>
+    )
+  }
 
   return (
     <>
@@ -63,68 +120,14 @@ const App = () => {
         <Row>
           <Col lg="12">
             <>
-              <div className="App" style={{ margin: '30px' }}>
-                <header className="App-header">
-                  <h1>Board Game <Badge color="secondary">New</Badge></h1>
-                  <Alert className="Alert-header" color="info">
-                    Inform the grid size and start the game!
-                  </Alert>
-                </header>
-                <SelectColors onChange={setSquareColos}></SelectColors>
-                <div style={{ textAlign: 'left' }}>Select the color</div>
-              </div>
+              {renderGameInfo()}
               <hr></hr>
-              <Container style={{ margin: '30px' }}>
-                <Row>
-                  <Col>No. of Columns - <input value={columns} placeholder="Columns" onChange={e => setColumns(e.target.value)} style={{ width: '65%' }} type="text"></input></Col>
-                  <Col>No. of Lines - <input value={lines} placeholder="Lines" onChange={e => setLines(e.target.value)} style={{ width: '70%' }} type="text"></input></Col>
-                  <Col> <Button onClick={startGame} style={{ width: '50%' }} color="primary">{start ? "Restart" : "Start"}</Button>{' '}</Col>
-                </Row>
-              </Container>
+              {renderGameDashboard()}
               <hr></hr>
               {start && <div>
                 <Container>
-                  <Row>
-                    <Col><>
-                      <table className="game">
-                        <tbody>
-                          {square.map((l: any, key: number) => (
-                            <tr key={key}>
-                              {l.map((c: any, key: number) => (
-                                <td key={key}
-                                  style={{ backgroundColor: c.color }}
-                                  className={c.origin ? " origin" : ""}
-                                >
-                                  <div></div>
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </></Col>
-                    <Col>
-                      <h1>{isBot ? 'Computer is playing...' : 'Your turn'}</h1>
-                      <h1>{'Computer\'\s Remaining Clicks-' + computerRemainingClicks}</h1>
-                      <h1>{'Your Remaining Clicks-' + userRemainingClicks}</h1>
-                      <h1>{computerRemainingClicks == 0 && userRemainingClicks == 0 ? 'Game Over' : ''}</h1>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-                        <DropdownToggle style={{ width: '100%' }} caret>
-                          {color ? color : 'Please Select Color'}
-                        </DropdownToggle>
-                        <DropdownMenu style={{ width: '100%' }}>
-                          {squareColors.map((c: any, index: number) => (
-                            <DropdownItem key={index} onClick={() => setColor(c.id)}>{c.name}</DropdownItem>
-                          ))}
-                        </DropdownMenu>
-                      </Dropdown>
-                    </Col>
-                    <Col> <Button onClick={apply} style={{ width: '50%' }} color="primary">Apply</Button>{' '}</Col>
-                  </Row>
+                  {renderCubeBlock()}
+                  {renderGameConsole()}
                   <Row>
                     <p>Inform next color</p>
                   </Row>
@@ -138,6 +141,3 @@ const App = () => {
   );
 };
 export default App;
-
-
-
