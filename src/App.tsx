@@ -13,6 +13,8 @@ const App = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen(prevState => !prevState);
   const [isBot, setIsBot] = useState(false);
+  const [userRemainingClicks, setUserRemainingClicks] = useState(5);
+  const [computerRemainingClicks, setComputerRemainingClicks] = useState(5);
 
 
   const startGame = () => {
@@ -29,7 +31,6 @@ const App = () => {
 
   useEffect(() => {
     if (isBot) {
-      
       setTimeout(() => {
         apply();
       }, 3000);
@@ -45,13 +46,16 @@ const App = () => {
     }
     ColorService.setOrigin(data).then((c) => {
       if (isBot) {
+        setComputerRemainingClicks(computerRemainingClicks - 1);
         setColor(randomColor)
+      } else {
+        setUserRemainingClicks(userRemainingClicks - 1);
       }
       setSquare(c.data);
       setIsBot(!isBot);
-
     })
   }
+
 
   return (
     <>
@@ -99,6 +103,12 @@ const App = () => {
                         </tbody>
                       </table>
                     </></Col>
+                    <Col>
+                      <h1>{isBot ? 'Computer is playing...' : 'Your turn'}</h1>
+                      <h1>{'Computer\'\s Remaining Clicks-' + computerRemainingClicks}</h1>
+                      <h1>{'Your Remaining Clicks-' + userRemainingClicks}</h1>
+                      <h1>{computerRemainingClicks == 0 && userRemainingClicks == 0 ? 'Game Over' : ''}</h1>
+                    </Col>
                   </Row>
                   <Row>
                     <Col>
