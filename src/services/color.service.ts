@@ -1,19 +1,31 @@
 import http from "../http-common";
 
-const getAll = () => {
-    return http.get("/menu/items/").catch(err => err);
+const getAllColors = async () => {
+    try {
+        return http.get("/menu/items/getAllColors");
+    } catch (err) {
+        return err;
+    }
 };
 
-const createMap = (data: any) => {
-    return http.post("/menu/items/createMap",data).catch(err => err);
+const createMap = async (data: any) => {
+    try {
+        return http.post("/menu/items/createMap", data);
+    } catch (err) {
+        return err;
+    }
 };
 
-const setOrigin = (data: any) => {
-    return http.post("/menu/items/setOrigin",data).catch(err => err);
+const setOrigin = async (data: any) => {
+    try {
+        return http.post("/menu/items/setOrigin", data);
+    } catch (err) {
+        return err;
+    }
 };
 
 const ColorService = {
-    getAll,
+    getAllColors,
     createMap,
     setOrigin
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { initialSelection, SelectColors } from "./components/colors";
 import { Badge, Alert, Button, Col, Container, Row, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from "reactstrap";
 import ColorService from "./services/color.service";
@@ -12,6 +12,7 @@ const App = () => {
   const [squareColors, setSquareColos] = useState(initialSelection);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const toggle = () => setDropdownOpen(prevState => !prevState);
+  const [isBot, setIsBot] = useState(false);
 
 
   const startGame = () => {
@@ -25,6 +26,32 @@ const App = () => {
       setSquare(c.data);
     });
   };
+
+  useEffect(() => {
+    if (isBot) {
+      
+      setTimeout(() => {
+        apply();
+      }, 3000);
+    }
+  }, [isBot])
+
+  const apply = () => {
+    if (!color) return;
+    const randomColor = squareColors[Math.floor(Math.random() * squareColors.length)].id;
+    const data = {
+      square,
+      color: isBot ? randomColor : color
+    }
+    ColorService.setOrigin(data).then((c) => {
+      if (isBot) {
+        setColor(randomColor)
+      }
+      setSquare(c.data);
+      setIsBot(!isBot);
+
+    })
+  }
 
   return (
     <>
@@ -86,14 +113,7 @@ const App = () => {
                         </DropdownMenu>
                       </Dropdown>
                     </Col>
-                    <Col> <Button onClick={() => {
-                      const data = {
-                        square, color
-                      }
-                      ColorService.setOrigin(data).then((c) => {
-                        setSquare(c.data);
-                      })
-                    }} style={{ width: '50%' }} color="primary">Apply</Button>{' '}</Col>
+                    <Col> <Button onClick={apply} style={{ width: '50%' }} color="primary">Apply</Button>{' '}</Col>
                   </Row>
                   <Row>
                     <p>Inform next color</p>
